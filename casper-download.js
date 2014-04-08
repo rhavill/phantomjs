@@ -36,6 +36,9 @@ function downloadPage() {
 	this.echo('Downloading '+path+ ' '+this.getTitle()+' '+destination);
 	checkDirectory(destination);
 	this.download(currentUrl, destination + '/' + fileName + '.html');
+
+	var scripts = this.evaluate(getScripts);
+	this.echo(scripts);
 }
 
 function checkDirectory(dir) {
@@ -58,8 +61,8 @@ function getScripts() {
     var scriptElements = document.querySelectorAll('script');
     var scripts = [];
     for (var i=0; i < scriptElements.length; i++) {
-    	if (e.getAttribute('src')) {
-    		scripts.push(e.getAttribute('src'));
+    	if (scriptElements[i].getAttribute('src')) {
+    		scripts.push(scriptElements[i].getAttribute('src'));
 		}    	
     }
     // return Array.prototype.map.call(scripts, function(e) {
