@@ -29,7 +29,6 @@ var steps = [
   	
     //Enter Credentials
     page.evaluate(function(config) {
-    	console.log(config.username);
 		var	email = document.getElementById('UserEmail');
 		var	password = document.getElementById('UserPassword');
 		email.value = config.username;
@@ -40,8 +39,6 @@ var steps = [
   function() {
     //Login
 	page.evaluate(function() {
-		console.log(document.getElementById('UserEmail').value);
-		console.log(document.getElementById('UserPassword').value);
 	    var loginForm = document.getElementById('UserLoginForm');
 	    loginForm.submit();
 	    return;
@@ -50,9 +47,6 @@ var steps = [
   function() {
     // Output content of page to stdout after form has been submitted
     page.evaluate(function() {
-    	//console.log('blah');
-    	//console.log('text '+ $("body").text());
-      	//console.log(document.querySelectorAll('html')[0].outerHTML);
       	var scripts = document.getElementsByTagName('script');
       	for (i=0; i < scripts.length; i++) {
       		console.log(scripts[i].getAttribute("src"))
