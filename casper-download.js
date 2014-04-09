@@ -22,8 +22,7 @@ casper.on("page.error", function(msg, backtrace) {
   this.echo("=========================");
 });
 
-var scripts = [],
-	links = [];
+var downloadedAssets = [];
 
 function downloadPage() {
 	var currentUrl = this.getCurrentUrl();
@@ -40,7 +39,6 @@ function downloadPage() {
 	downloadAssets.call(this, scripts);
 
 	var images = this.evaluate(getImages);
-	this.echo(images);
 	downloadAssets.call(this, images);
 
 	var cssFiles = this.evaluate(getCss);
@@ -51,16 +49,20 @@ function downloadAssets(urls) {
 	for (var i=0; i < urls.length; i++) {
 		if (urls[i].indexOf('http://') !== 0) {
 			urls[i] = config.baseUrl + urls[i];
-		}	
-		var path = urls[i].replace(config.baseUrl, '');
-		//console.log('url:'+urls[i], 'path:'+path);
-		// Remove the leading slash "/"
-		path = path.substring(1, path.length);
-		var parts = path.split('/');
-		var fileName = parts.pop();
-		var destination = config.downloadDir + '/' + parts.join('/');
-		checkDirectory(destination);
-		this.download(urls[i], destination + '/' + fileName);
+		}
+		if (downloadedAssets.indexOf(urls[i]) == -1) { 
+			//this.echo('Download: '+ urls[i]);
+			var path = urls[i].replace(config.baseUrl, '');
+			//console.log('url:'+urls[i], 'path:'+path);
+			// Remove the leading slash "/"
+			path = path.substring(1, path.length);
+			var parts = path.split('/');
+			var fileName = parts.pop();
+			var destination = config.downloadDir + '/' + parts.join('/');
+			checkDirectory(destination);
+			this.download(urls[i], destination + '/' + fileName);
+			downloadedAssets.push(urls[i]);
+		}
 	}
 }
 
