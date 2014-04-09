@@ -47,12 +47,14 @@ function downloadPage() {
 
 function downloadAssets(urls) {
 	for (var i=0; i < urls.length; i++) {
-		if (urls[i].indexOf('http://') !== 0) {
+		if (urls[i].indexOf('http://') !== 0 && urls[i].indexOf('https://') !== 0) {
 			urls[i] = config.baseUrl + urls[i];
 		}
 		if (downloadedAssets.indexOf(urls[i]) == -1) { 
 			//this.echo('Download: '+ urls[i]);
-			var path = urls[i].replace(config.baseUrl, '');
+			//var path = urls[i].replace(config.baseUrl, '');
+			var regex = /^(https?:\/\/[^\/]+)(.+)/;
+			var path = urls[i].replace(regex, "$2");
 			//console.log('url:'+urls[i], 'path:'+path);
 			// Remove the leading slash "/"
 			path = path.substring(1, path.length);
