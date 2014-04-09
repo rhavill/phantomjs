@@ -38,6 +38,13 @@ function downloadPage() {
 
 	var scripts = this.evaluate(getScripts);
 	downloadAssets.call(this, scripts);
+
+	var images = this.evaluate(getImages);
+	this.echo(images);
+	downloadAssets.call(this, images);
+
+	var cssFiles = this.evaluate(getCss);
+	downloadAssets.call(this, cssFiles);
 }
 
 function downloadAssets(urls) {
@@ -82,6 +89,28 @@ function getScripts() {
 		}    	
     }
 	return scripts;
+}
+
+function getImages() {
+    var imageElements = document.querySelectorAll('img');
+    var images = [];
+    for (var i=0; i < imageElements.length; i++) {
+    	if (imageElements[i].getAttribute('src') && imageElements[i].getAttribute('src').indexOf('data:image') != 0) {
+    		images.push(imageElements[i].getAttribute('src'));
+		}    	
+    }
+	return images;
+}
+
+function getCss() {
+    var styleElements = document.querySelectorAll('link');
+    var styles = [];
+    for (var i=0; i < styleElements.length; i++) {
+    	if (styleElements[i].getAttribute('href')) {
+    		styles.push(styleElements[i].getAttribute('href'));
+		}    	
+    }
+	return styles;
 }
 
 function getLinks() {
