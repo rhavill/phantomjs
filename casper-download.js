@@ -37,7 +37,24 @@ function downloadPage() {
 	this.download(currentUrl, destination + '/' + fileName + '.html');
 
 	var scripts = this.evaluate(getScripts);
-//	this.echo(scripts);
+	downloadAssets.call(this, scripts);
+}
+
+function downloadAssets(urls) {
+	for (var i=0; i < urls.length; i++) {
+		if (urls[i].indexOf('http://') !== 0) {
+			urls[i] = config.baseUrl + urls[i];
+		}	
+		var path = urls[i].replace(config.baseUrl, '');
+		//console.log('url:'+urls[i], 'path:'+path);
+		// Remove the leading slash "/"
+		path = path.substring(1, path.length);
+		var parts = path.split('/');
+		var fileName = parts.pop();
+		var destination = config.downloadDir + '/' + parts.join('/');
+		checkDirectory(destination);
+		this.download(urls[i], destination + '/' + fileName);
+	}
 }
 
 function checkDirectory(dir) {
@@ -91,8 +108,7 @@ function downloadPages(baseUrl, paths) {
 			// this.echo(this.colorizer.format(status, statusStyle) + ' ' + url);
 			this.echo(this.colorizer.format(status, statusStyle) + ' ' + this.getCurrentUrl());
 			if (status == 200) {
-				//var dl = this.evaluate(downloadPage);
-				downloadPage.call(this, 'bro');
+				downloadPage.call(this);
 				var links = this.evaluate(getLinks);
 			}
 		});
@@ -100,8 +116,11 @@ function downloadPages(baseUrl, paths) {
 }
 
 casper.start(config.loginUrl, function () {
-  // this.fill(config.loginFormSelector, { config.loginUsernameField: config.username, config.loginPasswordField: config.password },true);
-  this.fill('form', { '_username': config.username, '_password': config.password },true);
+	// First, fill-out the login form.
+	var cred = {};
+	cred[config.usernameField] = config.username;
+	cred[config.passwordField] = config.password
+   	this.fill(config.loginFormSelector, cred, true);
 });
 casper.then(function() {
 	downloadPages(config.baseUrl, config.downloadPaths);
@@ -111,11 +130,5 @@ casper.thenOpen(config.logoutUrl, function() {
 });	
 
 casper.run(function() {
-    // echo results in some pretty fashion
-    //this.echo(scripts.length + ' scripts found:');
-    //this.echo(' - ' + scripts.join('\n - ')).
-    for (var i = 0; i < scripts.length; i++) {
-    	//this.echo(scripts[i].code);
-    }
     this.exit();
 });
