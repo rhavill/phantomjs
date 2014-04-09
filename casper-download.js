@@ -33,12 +33,11 @@ function downloadPage() {
 	var parts = path.split('/');
 	var fileName = parts.pop();
 	var destination = config.downloadDir + '/' + parts.join('/');
-	this.echo('Downloading '+path+ ' '+this.getTitle()+' '+destination);
 	checkDirectory(destination);
 	this.download(currentUrl, destination + '/' + fileName + '.html');
 
 	var scripts = this.evaluate(getScripts);
-	this.echo(scripts);
+//	this.echo(scripts);
 }
 
 function checkDirectory(dir) {
@@ -65,11 +64,6 @@ function getScripts() {
     		scripts.push(scriptElements[i].getAttribute('src'));
 		}    	
     }
-    // return Array.prototype.map.call(scripts, function(e) {
-    // 	if (e.getAttribute('src')) {
-    // 		return e.getAttribute('src');
-    // 	}
-    // });
 	return scripts;
 }
 
@@ -83,7 +77,7 @@ function getLinks() {
 function downloadPages(baseUrl, paths) {
 	for (var i = 0; i < paths.length; i++) {
 		var url = baseUrl + paths[i];
-		console.log('url '+url);
+		//console.log('url '+url);
 		casper.thenOpen(url).then(function() {
 			// Set the status style based on server status code
 			var status = this.status().currentHTTPStatus;
@@ -96,13 +90,11 @@ function downloadPages(baseUrl, paths) {
 			// Display the spidered URL and status
 			// this.echo(this.colorizer.format(status, statusStyle) + ' ' + url);
 			this.echo(this.colorizer.format(status, statusStyle) + ' ' + this.getCurrentUrl());
-			//var dl = this.evaluate(downloadPage);
-			downloadPage.call(this, 'bro');
-			// Find links present on this page
-			var links = this.evaluate(getLinks);
-				
-			
-			//this.echo(dl);
+			if (status == 200) {
+				//var dl = this.evaluate(downloadPage);
+				downloadPage.call(this, 'bro');
+				var links = this.evaluate(getLinks);
+			}
 		});
 	}
 }
@@ -117,23 +109,6 @@ casper.then(function() {
 casper.thenOpen(config.logoutUrl, function() {
 	this.echo('Logged out.');
 });	
-// // casper.then(function() {
-// //     this.evaluateOrDie(function() {
-// //     	console.log(document.body.innerText);
-// //         return document.body.innerText;
-// //     }, 'Login failed');
-// // });
-// // casper.start(config.baseUrl, function() {
-// //     this.echo(this.getTitle());
-// // });
-
-// casper.thenOpen(config.baseUrl, function() {
-//     //this.echo(this.getTitle());
-//     console.log(this.getHTML());
-//     //this.download(this.getCurrentUrl(), 'temp.html');
-//     scripts = this.evaluate(getScripts);
-
-// });
 
 casper.run(function() {
     // echo results in some pretty fashion
